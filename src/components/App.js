@@ -1,10 +1,11 @@
 import { ThemeProvider } from '@material-ui/styles';
 import React , {useEffect, useState} from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CreateUser from './CreateUser';
+import LoginUser from './LoginUser';
+import Deposit from './Deposit';
 import History from './History';
 import Transfer from './Transfer';
-import Footer from './ui/Footer';
 import Header from './ui/Header';
 import theme from "./ui/Theme";
 import Users from './Users';
@@ -14,10 +15,11 @@ import LandingPage from './LandingPage';
 import ContactUs from './ContactUs';
 import AboutUs from './AboutUs';
 
+import {RequireToken, fetchToken} from './Auth.js'
 
 
 const App = () =>  {
- 
+
   const [message, setMessage] = useState("");
 
   const getWelcomeMessage = async () => {
@@ -51,8 +53,9 @@ const App = () =>  {
           selectedIndex={selectedIndex}
           setSelectedIndex={setSelectedIndex}
           />
-          <Switch>
-          <Route exact path='/'  
+          <Routes>
+          <Route  path='/'  
+          element = {<LoginUser />}
           render={(props)=>(
                 <LandingPage
                   {...props} 
@@ -61,7 +64,19 @@ const App = () =>  {
                 />
               )} 
             />
-          <Route exact path='/users'  
+
+          <Route  path='/home'  
+          element = {<RequireToken><LandingPage /></RequireToken>}
+          render={(props)=>(
+                <LandingPage
+                  {...props} 
+                  setValue={setValue}
+                  setSelectedIndex={setSelectedIndex}
+                />
+              )} 
+            />
+          <Route  path='/users'  
+          element = { <RequireToken> < Users/> </RequireToken>}
               render={(props)=>(
                 <Users
                   {...props} 
@@ -70,23 +85,18 @@ const App = () =>  {
                 />
               )}
           />
-          <Route exact path='/history' component={History} />
-          <Route exact path='/transfer' component={Transfer} />
-          <Route exact path='/create' component={CreateUser} />
-          <Route exact path='/contact' component={ContactUs} />
-          <Route exact path='/about' component={AboutUs} />
-         
-          </Switch>
+          <Route  path='/history' element={ <RequireToken> <History /> </RequireToken> } />
+          <Route  path='/transfer' element={ <RequireToken> < Transfer/> </RequireToken> } />
+          <Route  path='/create' element={< CreateUser/>} />
+          <Route  path='/login' element={< LoginUser/>} />
+          <Route  path='/deposit' element={ <RequireToken> < Deposit/> </RequireToken> } />
+          <Route  path='/contact' element={ <RequireToken> <ContactUs/> </RequireToken> } />
+
+          </Routes>
           {/*
-         
-         
-          
+
           <Route exact path='/about' component={AboutUs} /> */}
-      <Footer value={value}
-          setValue={setValue}
-          selectedIndex={selectedIndex}
-          setSelectedIndex={setSelectedIndex} 
-      />
+      
     </BrowserRouter>
 
     </ThemeProvider>

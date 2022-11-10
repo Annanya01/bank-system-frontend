@@ -1,71 +1,75 @@
-import React, { useState ,useEffect} from 'react';
-import { AppBar, Button,IconButton,List,ListItem, Tab, Tabs} from '@material-ui/core';
-import  Toolbar  from '@material-ui/core/Toolbar';
+import React, { useState, useEffect } from 'react';
+import { AppBar, Button, IconButton, List, ListItem, Tab, Tabs } from '@material-ui/core';
+import Toolbar from '@material-ui/core/Toolbar';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles, ThemeProvider } from '@material-ui/styles';
 import { Link } from 'react-router-dom';
-import {useTheme} from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { useMediaQuery } from '@material-ui/core';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MenuIcon from '@material-ui/icons/Menu'
 import { ListItemText } from '@material-ui/core';
+import { useNavigate } from "react-router-dom";
+import Theme from './Theme';
 
+import {Route, Routes} from "react-router-dom"
 
 function ElevationScroll(props) {
-    const { children} = props;
-    
+    const { children } = props;
+
     const trigger = useScrollTrigger({
-      disableHysteresis: true,
-      threshold: 0
+        disableHysteresis: true,
+        threshold: 0
     });
     return React.cloneElement(children, {
         elevation: trigger ? 4 : 0,
-      });
-    }
+    });
+}
 
-const useStyles = makeStyles(theme=>({
-    toolbarMargin:{
+
+const useStyles = makeStyles(theme => ({
+    toolbarMargin: {
         ...theme.mixins.toolbar,
-        marginBottom:'3em',
-        [theme.breakpoints.down('md')]:{
-            marginBottom:'2em'
+        marginBottom: '3em',
+        [theme.breakpoints.down('md')]: {
+            marginBottom: '2em'
         },
-        [theme.breakpoints.down('xs')]:{
-            marginBottom:'1.25em'
+        [theme.breakpoints.down('xs')]: {
+            marginBottom: '1.25em'
         }
     },
-    logo:{
-        height:'8em',
-        [theme.breakpoints.down('md')]:{
-            height:'7em'
+    logo: {
+        height: '8em',
+        [theme.breakpoints.down('md')]: {
+            height: '7em'
         },
-        [theme.breakpoints.down('xs')]:{
-            height:'5.5em'
+        [theme.breakpoints.down('xs')]: {
+            height: '5.5em'
         }
-        
+
     },
-    logoContainer:{
-        padding:0,
-        "&:hover":{
-            backgroundColor:'transparent'
+    logoContainer: {
+        padding: 0,
+        "&:hover": {
+            backgroundColor: 'transparent'
         }
     },
-    tabContainer:{
-        marginLeft:'auto'
+    tabContainer: {
+        marginLeft: 'auto'
     },
-    tab:{
+    tab: {
         ...theme.typography.tab,
-        minWidth:10,
-        marginLeft:'25px',
+        minWidth: 10,
+        marginLeft: '25px',
     },
-    button:{
+    button: {
         ...theme.typography.estimate,
-        borderRadius:'50px',
-        marginLeft:'50px',
-        marginRight:'50px',
-        height:'45px',
-        '&:hover':{
-            backgroundColor:theme.palette.secondary.light
+        borderRadius: '50px',
+        marginLeft: '50px',
+        marginRight: '50px',
+        height: '45px',
+        '&:hover': {
+            backgroundColor: theme.palette.secondary.light
         }
     },
     // menu:{
@@ -84,212 +88,267 @@ const useStyles = makeStyles(theme=>({
         backgroundColor: theme.palette.common.blue,
         color: "white",
         borderRadius: "0px"
-      },
-      menuItem: {
+    },
+    menuItem: {
         ...theme.typography.tab,
         opacity: 0.7,
         "&:hover": {
-          opacity: 1
-        }
-      },
-    drawerIcon:{
-        height:'50px',
-        width:'50px'
-    },
-    drawerIconContainer:{
-        marginLeft:'auto',
-        "&:hover":{
-            backgroundColor:'transparent'
+            opacity: 1
         }
     },
-    drawer:{
-        backgroundColor:theme.palette.common.blue
+
+    drawerIcon: {
+        height: '50px',
+        width: '50px'
     },
-    drawerItem:{
+    drawerIconContainer: {
+        marginLeft: 'auto',
+        "&:hover": {
+            backgroundColor: 'transparent'
+        }
+    },
+    drawer: {
+        backgroundColor: theme.palette.common.blue
+    },
+    drawerItem: {
         ...theme.typography.tab,
-        color:'white',
-        opacity:0.7
+        color: 'white',
+        opacity: 0.7
     },
-    drawerItemEstimate:{
+    drawerItemEstimate: {
         backgroundColor: theme.palette.common.orange
     },
-    drawerItemSelected:{
-        '& .MuiListItemText-root':{
-            opacity:1
+    drawerItemSelected: {
+        '& .MuiListItemText-root': {
+            opacity: 1
         }
-        
+
     },
-    appBar:{
-        zIndex:theme.zIndex.modal + 1
+    appBar: {
+        zIndex: theme.zIndex.modal + 1
     }
 }));
 
 
 
-export default function Header(props){
+export default function Header(props) {
+    const loginValue = localStorage.getItem("accessToken");
+    const [isLogin, setIsLogin] = useState(loginValue);
+    console.log(isLogin);
+    const navigate = useNavigate();
     const classes = useStyles();
     const theme = useTheme();
     const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-    const [openDrawer,setOpenDrawer] = useState(false)
-    
-    const handleChange = (e,newValue)=>{
+    const signOut = () => {
+        props.setValue(6);
+        setIsLogin(false)
+        console.log(isLogin)
+        localStorage.removeItem('accessToken')
+        navigate("/");
+    }
+
+   
+
+
+
+    const [openDrawer, setOpenDrawer] = useState(false)
+
+    const handleChange = (e, newValue) => {
         props.setValue(newValue);
     }
-   
+
     const routes = [
-        {name:'Home',link:'/',activeIndex:0},
-        {name:'Users',link:'/users',activeIndex:1
-        }, 
-        {name:'Create User',link:'/create' ,activeIndex:2},
-        {name:'All Transcation',link:'/history',activeIndex:3},
-        {name:'About Me',link:'/about',activeIndex:4},
-        {name:'Contact Us',link:'/contact',activeIndex:5},
-      
+        { name: 'Home', link: '/home', activeIndex: 0 },
+        { name: 'Users', link: '/users', activeIndex: 1 },
+        { name: 'Create User', link: '/create', activeIndex: 2 },
+        { name: 'All Transcation', link: '/history', activeIndex: 3 },
+        { name: 'Self Deposit', link: '/deposit', activeIndex: 4 },
+        { name: 'Contact Us', link: '/contact', activeIndex: 5 },
     ];
+
     useEffect(() => {
-        [...routes].forEach(route=>{
+        
+        [...routes].forEach(route => {
             switch (window.location.pathname) {
                 case `${route.link}`:
-                    if(props.value !== route.activeIndex){
+                    if (props.value !== route.activeIndex) {
                         props.setValue(route.activeIndex)
-                        if(route.selectedIndex && route.selectedIndex !== props.selectedIndex){
+                        if (route.selectedIndex && route.selectedIndex !== props.selectedIndex) {
                             props.setSelectedIndex(route.selectedIndex)
                         }
                     }
-                        break;
-                    case '/transfer':
-                        props.setValue(6);
-                        break;
-                        default:
-                            break;
-                }
+                    break;
+                case '/transfer':
+                    props.setValue(6);
+                    break;
+                default:
+                    break;
             }
+        }
         )
-    })
+    },)
 
     const tabs = (
         <React.Fragment>
-            <Tabs 
-                className={classes.tabContainer} 
-                value={props.value} 
-                onChange={handleChange} 
+            {isLogin ? (<Tabs
+                className={classes.tabContainer}
+                value={props.value}
+                onChange={handleChange}
                 indicatorColor='primary'
             >
-                {routes.map((route,index)=>(
-                        <Tab
-                            style={{color:'white'}}
-                            key={`${route}${index}`}
-                            className={classes.tab}
-                            component={Link}
-                            to={route.link}
-                            label={route.name}
-                            // aria-owns={route.ariaOwns}
-                            // aria-haspopup={route.ariaPopup}
-                            // onMouseOver={route.mouseOver}
-                        />
+                {routes.map((route, index) => (
+                    <Tab
+                        style={{ color: 'white' }}
+                        key={`${route}${index}`}
+                        className={classes.tab}
+                        component={Link}
+                        to={route.link}
+                        label={route.name}
+                    // aria-owns={route.ariaOwns}
+                    // aria-haspopup={route.ariaPopup}
+                    // onMouseOver={route.mouseOver}
+                    />
                 ))}
-            </Tabs>
-            <Button 
-                variant='contained' 
-                color='secondary' 
-                style={{color:'white'}}
+            </Tabs>):(<></>)
+}
+            {isLogin ?
+                (<Button
+                    variant='contained'
+                    color='secondary'
+                    style={{ color: 'white' }}
 
-                className={classes.button}  
-                component={Link} 
-                to='/transfer'
-                onClick={()=>props.setValue(6)}       
-            >
-                Transfer
-            </Button>
+                    className={classes.button}
+                    component={Link}
+                    to='/'
+                    onClick={signOut}
+                >
+                    Logout
+                </Button>) :
+                (<><Button
+                    variant='contained'
+                    color='secondary'
+                    style={{ color: 'white' }}
+
+                    className={classes.button}
+                    component={Link}
+                    to='/create'
+                    onClick={() => props.setValue(6)}
+                >
+                    Register
+                </Button>
+                    <Button
+                        variant='contained'
+                        color='secondary'
+                        style={{ color: 'white' }}
+
+                        className={classes.button}
+                        component={Link}
+                        to='/login'
+                        onClick={() => props.setValue(6)}
+                    >
+                        Login
+                    </Button></>)
+            }
+
+
         </React.Fragment>
 
     );
     const drawer = (
         <React.Fragment>
-            <SwipeableDrawer 
-                disableBackdropTransition={!iOS} 
+            <SwipeableDrawer
+                disableBackdropTransition={!iOS}
                 disableDiscovery={iOS}
                 open={openDrawer}
-                onClose={()=>setOpenDrawer(false)}
-                onOpen={()=>setOpenDrawer(true)}
-                classes={{paper:classes.drawer}}
-            > 
-            <div className={classes.toolbarMargin} />
-            <List disablePadding >
-                {routes.map(route=>(
-                    <ListItem   
-                        key={`${route}${route.activeIndex}`}
-                        divider 
-                        button 
-                        component={Link} 
-                        to={route.link} 
-                        selected={props.value === route.activeIndex}
-                        classes ={{selected: classes.drawerItemSelected}}
-                        onClick={()=>{
-                            setOpenDrawer(false); 
-                            props.setValue(route.activeIndex)
-                        }}       
-                    >
-                        <ListItemText disableTypography
-                            className={classes.drawerItem} 
+                onClose={() => setOpenDrawer(false)}
+                onOpen={() => setOpenDrawer(true)}
+                classes={{ paper: classes.drawer }}
+            >
+                <div className={classes.toolbarMargin} />
+                <List disablePadding >
+                    {routes.map(route => (
+                        <ListItem
+                            key={`${route}${route.activeIndex}`}
+                            divider
+                            button
+                            component={Link}
+                            to={route.link}
+                            selected={props.value === route.activeIndex}
+                            classes={{ selected: classes.drawerItemSelected }}
+                            onClick={() => {
+                                setOpenDrawer(false);
+                                props.setValue(route.activeIndex)
+                            }}
                         >
+                            <ListItemText disableTypography
+                                className={classes.drawerItem}
+                            >
                                 {route.name}
-                        </ListItemText>
-                    </ListItem>
-                ))}     
-                    <ListItem 
-                        divider 
-                        button 
-                        component={Link} 
-                        to='/transfer' 
+                            </ListItemText>
+                        </ListItem>
+                    ))}
+                    <ListItem
+                        divider
+                        button
+                        component={Link}
+                        to='/transfer'
                         classes={{
-                            root:classes.drawerItemEstimate,
-                            selected:classes.drawerItemSelected
+                            root: classes.drawerItemEstimate,
+                            selected: classes.drawerItemSelected
                         }}
-                        onClick={()=>{
-                            setOpenDrawer(false); 
+                        onClick={() => {
+                            setOpenDrawer(false);
                             props.setValue(6)
                         }}
                         selected={props.value === 6}
                     >
-                        <ListItemText 
-                            className={classes.drawerItem}  
-                            disableTypography 
+                        <ListItemText
+                            className={classes.drawerItem}
+                            disableTypography
                         >
-                                Transfer
+                            Transfer
                         </ListItemText>
-                    </ListItem>             
-            </List>
+                    </ListItem>
+                </List>
             </SwipeableDrawer>
-                <IconButton className={classes.drawerIconContainer}
-                            onClick={()=>setOpenDrawer(!openDrawer)}
-                            disableRipple
-                            
-                >
-                    <MenuIcon  className={classes.drawerIcon}/>
-                </IconButton>
+            <IconButton className={classes.drawerIconContainer}
+                onClick={() => setOpenDrawer(!openDrawer)}
+                disableRipple
+
+            >
+                <MenuIcon className={classes.drawerIcon} />
+            </IconButton>
         </React.Fragment>
     );
     return (
+
+        // <ThemeProvider theme={theme}>
+            
+
+        // </ThemeProvider>
+        
+
+
+
         <React.Fragment>
             <ElevationScroll>
-            <AppBar position='fixed' className={classes.appBar}>
-                <Toolbar disableGutters>
-                    <Button 
-                        className={classes.logoContainer} 
-                        component={Link} 
-                        to='/'
-                        onClick={()=>props.setValue(0)}
-                        disableRipple
-                    >
-                    {/* <img alt='company logo' src={logo} className={classes.logo}/> */}
-                    </Button>
-                 
-                  {matches ? drawer : tabs}
-                </Toolbar>
-            </AppBar>
+                <AppBar position='fixed' className={classes.appBar}>
+                    <Toolbar disableGutters>
+                        <Button
+                            className={classes.logoContainer}
+                            component={Link}
+                            to='/'
+                            onClick={() => props.setValue(0)}
+                            disableRipple
+                        >
+                            {/* <img alt='company logo' src={logo} className={classes.logo}/> */}
+                        </Button>
+
+                        {matches ? drawer : tabs}
+                    </Toolbar>
+                </AppBar>
             </ElevationScroll>
             <div className={classes.toolbarMargin} />
         </React.Fragment>

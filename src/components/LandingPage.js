@@ -1,6 +1,8 @@
 import React from 'react';
 import { makeStyles, Grid, Typography,useMediaQuery,useTheme ,Button} from '@material-ui/core';
 import { Link } from 'react-router-dom';
+import { SignalWifi0BarOutlined, SignalWifi1BarOutlined } from '@material-ui/icons';
+import {useNavigate} from "react-router-dom";
 
 
 
@@ -34,6 +36,12 @@ export default function LandingPage(props){
     const theme = useTheme();
     const matchesMD = useMediaQuery(theme.breakpoints.down('md'));
     const matchesSM = useMediaQuery(theme.breakpoints.down('sm'));
+    const navigate = useNavigate();
+
+    const signOut = () => {
+        localStorage.removeItem('access')
+        navigate("/");
+    }
 
 
     // const techOptions = {
@@ -46,6 +54,7 @@ export default function LandingPage(props){
     // }
 
 
+
     return(
         <Grid container direction='column'>
             <Grid item className={classes.rowContainer} style={{marginTop:'1em'}}>
@@ -54,7 +63,7 @@ export default function LandingPage(props){
                     style={{fontFamily:'Pacifico' }}
                     align={matchesMD ? 'center' : undefined}
                 >
-                     Welcome to,RJ Bank
+                     Welcome to, Ecommerce
                 </Typography>
             </Grid>
             <Grid 
@@ -87,15 +96,13 @@ export default function LandingPage(props){
                     Simpler. Faster. Safer
                     </Typography>
                     <Grid item align='center' style={{marginBottom:'3em'}}>
-                        <Button variant='contained' className={classes.estimateButton}  
-                                component={Link} to='/create'
+                        {/* <Button variant='contained' className={classes.estimateButton}  
+                                component={Link} to='/'
                                 style={{color:'white'}}
-                                onClick = {()=>{
-                                    props.setValue(3)
-                                }}
+                                onClick = {signOut}
                         >
-                        Create New Account
-                        </Button>
+                        Logout
+                        </Button> */}
                     </Grid>
                     
                     </Grid>
